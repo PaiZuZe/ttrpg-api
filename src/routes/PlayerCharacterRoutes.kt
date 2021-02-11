@@ -15,7 +15,7 @@ fun generateUUID(): String {
     val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
     return (1..STRING_LENGTH)
         .map { _ -> kotlin.random.Random.nextInt(0, charPool.size) }
-        .map(char_pool::get)
+        .map(charPool::get)
         .joinToString("")
 }
 
@@ -80,13 +80,12 @@ fun Route.playerCharacterRouting() {
                         .select { PlayerCharacters.id eq pcID }
                         .single()
                 })
-                var tmp: Int = pc.currentHp!!.toIntOrNull() ?: 0
+                var tmp: Int = pc.currentHp ?: 0
                 tmp += healing.toIntOrNull() ?: 0
-                val maxHp: Int = pc.maxHp.toIntOrNull() ?: 0
-                val newHp: Int = if (tmp < maxHp) tmp else maxHp
+                val newHp: Int = if (tmp < pc.maxHp) tmp else pc.maxHp
                 transaction {
                     PlayerCharacters.update({ PlayerCharacters.id eq pcID}) {
-                        it[PlayerCharacters.currentHp] = newHp.toString()
+                        it[PlayerCharacters.currentHp] = newHp
                     }
                 }
                 call.respondText("Healing DONE\n", contentType = ContentType.Text.Plain,
@@ -107,12 +106,12 @@ fun Route.playerCharacterRouting() {
                         .select { PlayerCharacters.id eq pcID }
                         .single()
                 })
-                var tmp: Int = pc.currentHp!!.toIntOrNull() ?: 0
+                var tmp: Int = pc.currentHp ?: 0
                 tmp -= dmg.toIntOrNull() ?: 0
                 val newHp: Int = if (tmp > 0) tmp else 0
                 transaction {
                     PlayerCharacters.update({ PlayerCharacters.id eq pcID}) {
-                        it[PlayerCharacters.currentHp] = newHp.toString()
+                        it[PlayerCharacters.currentHp] = newHp
                     }
                 }
                 call.respondText("Damaging DONE\n", contentType = ContentType.Text.Plain,

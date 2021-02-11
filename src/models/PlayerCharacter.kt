@@ -11,8 +11,8 @@ object PlayerCharacters: Table() {
     val dex = varchar("dex", 2)
     val int = varchar("int", 2)
     val cha = varchar("cha", 2)
-    val maxHp = varchar("maxHp", 3)
-    val currentHp = varchar("currentHp", 3)
+    val maxHp = integer("maxHp")
+    val currentHp = integer("currentHp")
 
     override val primaryKey = PrimaryKey(id, name = "PK_PC_ID")
 
@@ -39,6 +39,6 @@ data class PlayerCharacter(
     val dex: String,
     val int: String,
     val cha: String,
-    val maxHp: String,
-    val currentHp: String? = null
+    val maxHp: Int,
+    val currentHp: Int? = null
 )
