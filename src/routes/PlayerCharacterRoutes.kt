@@ -12,9 +12,9 @@ import org.jetbrains.exposed.sql.transactions.*
 
 fun generateUUID(): String {
     val STRING_LENGTH: Int = 12
-    val char_pool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
+    val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')
     return (1..STRING_LENGTH)
-        .map { _ -> kotlin.random.Random.nextInt(0, char_pool.size) }
+        .map { _ -> kotlin.random.Random.nextInt(0, charPool.size) }
         .map(char_pool::get)
         .joinToString("")
 }
@@ -29,8 +29,8 @@ fun Route.playerCharacterRouting() {
                 PlayerCharacters.insert {
                     it[id] = uuid
                     it[name] = pc.name
-                    it[max_hp] = pc.max_hp
-                    it[current_hp] = pc.current_hp ?: pc.max_hp
+                    it[maxHp] = pc.maxHp
+                    it[currentHp] = pc.currentHp ?: pc.maxHp
                     it[str] = pc.str
                     it[dex] = pc.dex
                     it[int] = pc.int
@@ -80,13 +80,13 @@ fun Route.playerCharacterRouting() {
                         .select { PlayerCharacters.id eq pcID }
                         .single()
                 })
-                var tmp: Int = pc.current_hp!!.toIntOrNull() ?: 0
+                var tmp: Int = pc.currentHp!!.toIntOrNull() ?: 0
                 tmp += healing.toIntOrNull() ?: 0
-                val max_hp: Int = pc.max_hp.toIntOrNull() ?: 0
-                val new_hp: Int = if (tmp < max_hp) tmp else max_hp
+                val maxHp: Int = pc.maxHp.toIntOrNull() ?: 0
+                val newHp: Int = if (tmp < maxHp) tmp else maxHp
                 transaction {
                     PlayerCharacters.update({ PlayerCharacters.id eq pcID}) {
-                        it[PlayerCharacters.current_hp] = new_hp.toString()
+                        it[PlayerCharacters.currentHp] = newHp.toString()
                     }
                 }
                 call.respondText("Healing DONE\n", contentType = ContentType.Text.Plain,
@@ -107,13 +107,12 @@ fun Route.playerCharacterRouting() {
                         .select { PlayerCharacters.id eq pcID }
                         .single()
                 })
-                var tmp: Int = pc.current_hp!!.toIntOrNull() ?: 0
+                var tmp: Int = pc.currentHp!!.toIntOrNull() ?: 0
                 tmp -= dmg.toIntOrNull() ?: 0
-                val max_hp: Int = pc.max_hp.toIntOrNull() ?: 0
-                val new_hp: Int = if (tmp > 0) tmp else 0
+                val newHp: Int = if (tmp > 0) tmp else 0
                 transaction {
                     PlayerCharacters.update({ PlayerCharacters.id eq pcID}) {
-                        it[PlayerCharacters.current_hp] = new_hp.toString()
+                        it[PlayerCharacters.currentHp] = newHp.toString()
                     }
                 }
                 call.respondText("Damaging DONE\n", contentType = ContentType.Text.Plain,
