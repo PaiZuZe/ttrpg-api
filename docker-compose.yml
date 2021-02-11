@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  app:
+    build: .
+    command: sh -c 'while ! nc -z ttrpg-database 5432; do sleep 1; done; java -jar ttrpg-api-1-all.jar'
+    depends_on:
+      - ttrpg_db
+    ports:
+      - "8000:8080"
+
+  ttrpg_db:
+    container_name: ttrpg-database
+    image: postgres:13.1-alpine
+    environment: 
+      - POSTGRES_USER=ttrpg
+      - POSTGRES_PASSWORD=password123
+      - POSTGRES_DB=ttrpgdb
+    ports:
+      - "8001:5432"
